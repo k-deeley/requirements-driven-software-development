@@ -1,0 +1,7 @@
+Filename,Artifact,RequirementID,Type,StartLineNumber,EndLineNumber
+C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter~m.slmx,C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter.m,TransmitterConfigurableParameters,Relate,4,4
+C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter~m.slmx,C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter.m,UserConfigurableCarrierFrequency,Implement,5,6
+C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter~m.slmx,C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter.m,UserConfigurableUpsamplingRate,Implement,7,8
+C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter~m.slmx,C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter.m,UserConfigurableUpsamplingMethod,Implement,9,11
+C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter~m.slmx,C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter.m,TransmitterConstruction,Implement,16,27
+C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter~m.slmx,C:\Users\kdeeley\Files\MathWorks\Projects\2024_02_16_Neurinnov\Training\code\Transmitter.m,Transmission,Implement,29,64
