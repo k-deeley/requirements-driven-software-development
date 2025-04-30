@@ -36,6 +36,6 @@ codegen/
 .buildtool/
 
 # Requirements Toolbox files
-*.slreqx
+requirements/*.slreqx
 *.slmx
 
