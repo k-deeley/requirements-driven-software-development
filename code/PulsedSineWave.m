@@ -52,15 +52,18 @@ classdef PulsedSineWave
         function value = get.Signal( obj )
 
             % Compute the sine wave, pulses, and the pulsed sine wave.
-            time = transpose( 0 : 1/obj.SampleRate : obj.Duration );
-            Time = seconds( time );
-            sineWave = obj.Amplitude * sin( ...
-                2 * pi * obj.Frequency * time + obj.Phase );
-            pulses = rescale( square( 2 * pi * obj.PulseRate * ...
-                time + obj.Phase ) );
-            PulsedSineWave = sineWave .* pulses;
+            A = obj.Amplitude;
+            f = obj.Frequency;
+            ph = obj.Phase;            
+            dr = obj.Duration;           
+            r = obj.PulseRate;
+            d = obj.Duty;
+            fs = obj.SampleRate;
+            [PulsedSineWave, Time] = ...
+                generateWave( A, f, ph, dr, r, d, fs );            
 
             % Assemble the timetable.
+            Time = seconds( Time );
             value = timetable( Time, PulsedSineWave );
 
         end % get.Signal

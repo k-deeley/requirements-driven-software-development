@@ -94,17 +94,26 @@ reqsTable = struct2table( reqsStruct, "AsArray", true );
 reqsTable = reqsTable(:, ["Index", "Id", "Type", ...
     "Summary", "Description", "Rationale"]);
 
-% Now clean out the RTF format if the user has made manual changes in the
-% Requirements Editor
-reqsTable.Summary = stripRTF (reqsTable.Summary);
-reqsTable.Description = stripRTF (reqsTable.Description);
-reqsTable.Rationale = stripRTF (reqsTable.Rationale);
-
+% Now clean out any rich text if the user has made manual changes in the
+% Requirements Editor.
+reqsTable.Summary = stripRTF( reqsTable.Summary );
+reqsTable.Description = stripRTF( reqsTable.Description );
+reqsTable.Rationale = stripRTF( reqsTable.Rationale );
 
 % Serialize the requirement set using a plain text file.
 [reqsPath, reqsFilename] = fileparts( requirementsSet );
 reqsOutputFilename = fullfile( reqsPath, reqsFilename + ".csv" );
 writetable( reqsTable, reqsOutputFilename )
+
+proj = currentProject();
+if ~isempty( proj )
+    projectRoot = proj.RootFolder;
+    reqsOutputFilenameNoRoot = replace( reqsOutputFilename, ...
+        projectRoot, "." );
+else
+    reqsOutputFilenameNoRoot = reqsOutputFilename;
+end % if
+fprintf( "[+] %s\n", reqsOutputFilenameNoRoot )
 
 % Repeat this process for the corresponding link sets. First, find the
 % associated link sets for the requirements set. There should be two of
@@ -117,37 +126,51 @@ linksTable = table( 'Size', [0, 6], ...
     ["string", "string", "string", "string", "double", "double"], ...
     'VariableNames', ["Filename", "Artifact", "RequirementID", "Type", ...
     "StartLineNumber", "EndLineNumber"] );
+
 for linkSetIdx = 1 : numel( linkSets )
+
     % Extract the current set of links.
     linkSet = linkSets(linkSetIdx);
     links = linkSet.getLinks();
     artifact = string( linkSet.Artifact);
     filename = string( linkSet.Filename );
+    
     % Store the data for each link in one row of the table.
     for linkIdx = 1 : numel( links )
+    
         % Identify the text range corresponding to the current link
         % within the source code file.
         link = links(linkIdx);
         linkSource = slreq.structToObj( link.source() );
         textRange = linkSource.getLineRange();
+        
         % Append the data for the current link to the main table.
         linksTable(end+1, :) = {filename, artifact, ...
             string( link.destination().id ), ...
             string( link.Type ), ...
             textRange(1), textRange(2) }; %#ok<AGROW>
+
     end % for
+
 end % for
 
 % Serialize the link sets using a plain text file.
 linksOutputFilename = fullfile( reqsPath, reqsFilename + "Links.csv" );
-% Now make sure all file paths are relative to the project root folder
-proj = currentProject;
-if ~isempty(proj)
-    rf = proj.RootFolder;
-    linksTable.Filename = strrep(linksTable.Filename,rf,'.');
-    linksTable.Artifact = strrep(linksTable.Artifact,rf,'.');
-end
+
+% Now make sure all file paths are relative to the project root folder.
+if ~isempty( proj )
+    linksTable.Filename = replace( linksTable.Filename, projectRoot, "." );
+    linksTable.Artifact = replace( linksTable.Artifact, projectRoot, "." );
+end % if
+
 writetable( linksTable, linksOutputFilename )
+if ~isempty( proj )
+    linksOutputFilenameNoRoot = replace( linksOutputFilename, ...
+        projectRoot, "." );
+else
+    linksOutputFilenameNoRoot = linksOutputFilename;
+end % if
+fprintf( "[+] %s\n", linksOutputFilenameNoRoot )
 
 % Ensure that the requirements set gets closed. This also closes the
 % associated link sets.
@@ -158,19 +181,35 @@ slreq.clear()
 
 end % serialize
 
-function str = stripRTF(rtf)
-    % Removes <br /> or <br> tags replace with \n
-    tmpstr = regexprep(rtf,'<br />','\\n');
-    tmpstr = regexprep(tmpstr,'<br>','\\n');
-    % Removes HTML <> tags...
-    tmpstr = regexprep(tmpstr,'<.*?>','');
-    % Remove all between { }
-    tmpstr = regexprep(tmpstr, '{.*?}', '');
-    % Remove dangling p, li
-    tmpstr = regexprep(tmpstr, 'p, li', '');
-    % Replace newline with \n
-    tmpstr = regexprep(tmpstr, '\n', '\\n');
-    % Remove leading whitespace
-    tmpstr = regexprep(tmpstr, '^[\s*|\\n]+', '');
-    str = tmpstr;
-end     
+function plainText = stripRTF( richText )
+%STRIPRTF Remove rich-text formatting from the given input string.
+
+arguments ( Input )
+    richText(:, 1) string
+end % arguments ( Input )
+
+arguments ( Output )
+    plainText(:, 1) string
+end % arguments ( Output )
+
+% Removes <br /> or <br> tags replace with \n
+cleanText = regexprep( richText, "<br />", "\\n" );
+cleanText = regexprep( cleanText, "<br>", "\\n" );
+
+% Removes HTML <> tags...
+cleanText = regexprep( cleanText, "<.*?>", "" );
+
+% Remove all between { }
+cleanText = regexprep( cleanText, "{.*?}", "" );
+
+% Remove dangling p, li
+cleanText = regexprep( cleanText, "p, li", "" );
+
+% Replace newline with \n
+cleanText = regexprep( cleanText, "\n", "\\n" );
+
+% Remove leading whitespace
+cleanText = regexprep( cleanText, "^[\s*|\\n]+", "" );
+plainText = cleanText;
+
+end % stripRTF    
