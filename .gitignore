@@ -39,3 +39,8 @@ codegen/
 *.slreqx
 *.slmx
 
+# MATLAB Test Manager
+derived/
+
+# Reports
+reports/

@@ -1,93 +1,95 @@
 function plan = buildfile()
-%BUILDFILE Build file for the requirements-driven testing with MATLAB
-%project.
+%BUILDFILE Build file for the "Best Practices for Requirements-Driven
+% Software Development with MATLAB" project.
 
-% Create the build plan - this is a sequence of tasks executed by the build
-% automation.
-%
-% Notes:
-% * localfunctions returns a cell array of function handles to all local
-%   functions.
-% * buildplan filters this list for functions ending in "Task".
+% Copyright 2025 The MathWorks, Inc.
+
+% Define the build plan.
 plan = buildplan( localfunctions() );
 
-% Use a MATLAB-provided task to check for any code issues within the
-% project.
-rootFolder = plan.RootFolder;
-plan("assertNoCodeIssues") = matlab.buildtool.tasks.CodeIssuesTask( ...
-    rootFolder, ...
-    "Description", ...
-    "Check that we have no Code Analyzer warnings or errors.", ...
-    "IncludeSubfolders", true, ... % Check recursively
-    "ErrorThreshold", 0, ... % Enforce no Code Analyzer error messages
-    "WarningThreshold", 0 ); % Same, but for warnings
+% Set the archive task to run by default.
+plan.DefaultTasks = "archive";
 
-% Use a MATLAB-provided task to run the unit tests within the project.
-codeFolder = fullfile( rootFolder, "code" );
-coveragePath = fullfile( rootFolder, "reports", "Coverage.html" );
-plan("assertTestSuccess") = matlab.buildtool.tasks.TestTask( ...
-    rootFolder, ...
-    "Description", "Run all project tests and assert that they pass.", ...
+% Add a test task to run the unit tests for the project. Generate and save
+% a coverage report.
+projectRoot = plan.RootFolder;
+testsFolder = fullfile( projectRoot, "tests" );
+codeFolder = fullfile( projectRoot, "code" );
+plan("test") = matlab.buildtool.tasks.TestTask( testsFolder, ...
     "Strict", true, ...
+    "Description", "Assert that all project tests pass.", ...
     "SourceFiles", codeFolder, ...
-    "CodeCoverageResults", coveragePath, ...
-    "OutputDetail", "none" );
+    "CodeCoverageResults", "reports/Coverage.html", ...
+    "OutputDetail", "verbose" );
 
-% Set the dependencies between the tasks.
-coreTasks = ["verifyProjectIntegrity", "assertNoCodeIssues", ...
-    "assertTestSuccess"];
-plan("assertNoCodeIssues").Dependencies = "verifyProjectIntegrity";
-plan("assertTestSuccess").Dependencies = "assertNoCodeIssues";
-plan("serializeRequirements").Dependencies = coreTasks;
-plan("deserializeRequirements").Dependencies = coreTasks;
-plan("generateRequirementsReport").Dependencies = coreTasks;
+% The test task depends on the check task.
+plan("test").Dependencies = "check";
 
-% Set the default tasks in the plan.
-plan.DefaultTasks = ["verifyProjectIntegrity", ...
-    "assertNoCodeIssues", "assertTestSuccess"];
+% The archive task depends on the test task.
+plan("archive").Dependencies = "test";
+
+% The requirements-related tasks depend on the test task.
+plan("writereqs").Dependencies = "test";
+plan("readreqs").Dependencies = "test";
+plan("reportreqs").Dependencies = "test";
 
 end % buildfile
 
-function serializeRequirementsTask( ~ )
-%Convert binary requirements sets and link sets to CSV files.
+function checkTask( context )
+% Check the source code and project for any issues.
+
+% Set the project root as the folder in which to check for any static code
+% issues.
+projectRoot = context.Plan.RootFolder;
+codeIssuesTask = matlab.buildtool.tasks.CodeIssuesTask( projectRoot, ...
+    "IncludeSubfolders", true, ...
+    "Configuration", "factory", ...
+    "Description", ...
+    "Assert that there are no code issues in the project.", ...
+    "WarningThreshold", 0 );
+codeIssuesTask.analyze( context )
+
+% Update the project dependencies.
+prj = currentProject();
+prj.updateDependencies()
+
+% Run the checks.
+checkResults = table( prj.runChecks() );
+
+% Log any failed checks.
+passed = checkResults.Passed;
+notPassed = ~passed;
+if any( notPassed )
+    disp( checkResults(notPassed, :) )
+else
+    fprintf( "** All project checks passed.\n\n" )
+end % if
+
+% Check that all checks have passed.
+assert( all( passed ), "buildfile:ProjectIssue", ...
+    "At least one project check has failed. " + ...
+    "Resolve the failures shown above to continue." )
+
+end % checkTask
+
+function writereqsTask( ~ )
+%Serialize binary requirements sets and link sets to CSV files.
 
 % See writereqs for further details.
 writereqs()
 
-end % serializeRequirementsTask
+end % writereqsTask
 
-function deserializeRequirementsTask( ~ )
-%Convert CSV files containing requirements sets and link sets to binary
-%files (.SLREQX and .SLMX).
+function readreqsTask( ~ )
+% Create binary requirements and link sets from CSV files.
 
 % See readreqs for further details.
 readreqs()
 
-end % deserializeRequirementsTask
+end % readreqsTask
 
-function verifyProjectIntegrityTask( context )
-%Verify the integrity of the current MATLAB project.
-
-% Obtain a reference to the current project.
-rootFolder = context.Plan.RootFolder;
-prj = openProject( rootFolder );
-
-% Update any project dependencies (some checks rely on the Dependency
-% Analysis being complete).
-prj.updateDependencies()
-
-% Run the project checks.
-results = prj.runChecks();
-
-% Assert that all checks have passed.
-passed = [results.Passed];
-assert( all( passed ), "buildfile:ProjectCheckFailed", ...
-    "At least one project integrity check failed." )
-
-end % verifyProjectIntegrityTask
-
-function generateRequirementsReportTask( context )
-%Generate a report covering the project requirements and links.
+function reportreqsTask( context )
+% Generate a report describing the project requirements and links.
 
 % Load the necessary requirements sets (needed for report generation).
 rootFolder = context.Plan.RootFolder;
@@ -110,4 +112,14 @@ reportOptions.includes.emptySections = true;
 slreq.generateReport( requirementsSets, reportOptions );
 slreq.clear() % Unload requirements sets from memory
 
-end % generateRequirementsReportTask
+end % reportreqsTask
+
+function archiveTask( ~ )
+% Archive the project.
+
+proj = currentProject();
+projectRoot = proj.RootFolder;
+exportName = fullfile( projectRoot, "Requirements.mlproj" );
+proj.export( exportName )
+
+end % archiveTask

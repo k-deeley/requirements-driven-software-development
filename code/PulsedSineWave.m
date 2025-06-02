@@ -11,7 +11,7 @@ classdef PulsedSineWave
         % Phase of the sine wave (radians).
         Phase(1, 1) double {mustBeReal, mustBeFinite} = 0
         % Signal duration (s).
-        Duration(1, 1) double {mustBeFinite, mustBePositive} = 2
+        Duration(1, 1) double {mustBeFinite, mustBeNonnegative} = 2
         % Pulse rate (Hz), used to create a pulsed signal.
         PulseRate(1, 1) double {mustBeFinite, mustBePositive} = 4
         % Duty cycle period (%), used to create a pulsed signal.
