@@ -55,4 +55,4 @@ jobs:
 
       # Run the default tasks in the project build file.
       - name: Run the default tasks in the project build file.
-        uses: matlab-actions/run-build@v2      
+        uses: matlab-actions/run-build@v2

@@ -1,4 +1,4 @@
-%% Sample object-oriented communications workflow.
+%% Example object-oriented communications workflow.
 
 %% Create the waveform (a pulsed sine wave).
 PSW = PulsedSineWave( "Amplitude", 2, ...
