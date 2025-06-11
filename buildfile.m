@@ -8,7 +8,7 @@ function plan = buildfile()
 plan = buildplan( localfunctions() );
 
 % Set the archive task to run by default.
-plan.DefaultTasks = "archive";
+plan.DefaultTasks = "generateCode";
 
 % Add a test task to run the unit tests for the project. Generate and save
 % a coverage report.
@@ -113,6 +113,13 @@ slreq.generateReport( requirementsSets, reportOptions );
 slreq.clear() % Unload requirements sets from memory
 
 end % reportreqsTask
+
+function generateCodeTask( ~ )
+% Generate C code from the signal processing algorithms.
+
+codegen( "generateWave", "-config:mex", "-args", {1, 1, 1, 1, 1, 1, 1} )
+
+end % generateCodeTask
 
 function archiveTask( ~ )
 % Archive the project.

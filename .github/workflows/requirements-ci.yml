@@ -1,8 +1,11 @@
 name: Best Practices for Requirements-Driven Software Development with MATLAB - Continuous Integration
       
-# Controls when the workflow will run.
+# Triggers the workflow on push request events and for manual runs from the Actions tab in GitHub.
 on: [push, workflow_dispatch]
-  # Triggers the workflow on push request events and for manual runs from the Actions tab in GitHub.
+
+# Required for builds that use transformation products such as MATLAB Coder.
+env:
+  MLM_LICENSE_TOKEN: ${{ secrets.MATLAB_Token }}  
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel.
 jobs:
