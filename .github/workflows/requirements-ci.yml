@@ -53,6 +53,8 @@ jobs:
           # The tests require only base MATLAB.
           products: >
             MATLAB
+            MATLAB_Coder
+            Requirements_Toolbox
             Signal_Processing_Toolbox
           release: ${{ matrix.matlab-version }}
 
