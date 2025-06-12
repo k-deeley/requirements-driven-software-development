@@ -8,7 +8,7 @@ function plan = buildfile()
 plan = buildplan( localfunctions() );
 
 % Set the archive task to run by default.
-plan.DefaultTasks = "archive";
+plan.DefaultTasks = "codegen";
 
 % Add a test task to run the unit tests for the project. Generate and save
 % a coverage report.
@@ -24,6 +24,9 @@ plan("test") = matlab.buildtool.tasks.TestTask( testsFolder, ...
 
 % The test task depends on the check task.
 plan("test").Dependencies = "check";
+
+% The code generation task depends on the test task.
+plan("codegen").Dependencies = "test";
 
 % The archive task depends on the test task.
 plan("archive").Dependencies = "test";
@@ -114,12 +117,13 @@ slreq.clear() % Unload requirements sets from memory
 
 end % reportreqsTask
 
-function generateCodeTask( ~ )
+function codegenTask( ~ )
 % Generate C code from the signal processing algorithms.
 
-codegen( "generateWave", "-config:mex", "-args", {1, 1, 1, 1, 1, 1, 1} )
+codegen( "generateWave", "-config:lib", ...
+    "-args", {1, 1, 1, 1, 1, 1, 1}, "-c" )
 
-end % generateCodeTask
+end % codegenTask
 
 function archiveTask( ~ )
 % Archive the project.

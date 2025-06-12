@@ -4,8 +4,8 @@ name: Best Practices for Requirements-Driven Software Development with MATLAB - 
 on: [push, workflow_dispatch]
 
 # Required for builds that use transformation products such as MATLAB Coder.
-#env:
-#  MLM_LICENSE_TOKEN: ${{ secrets.MATLAB_Token }}  
+env:
+  MLM_LICENSE_TOKEN: ${{ secrets.MATLAB_Token }}  
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel.
 jobs:
@@ -54,6 +54,7 @@ jobs:
           products: >
             MATLAB
             MATLAB_Coder
+            Polyspace_Bug_Finder
             Requirements_Toolbox
             Signal_Processing_Toolbox
           release: ${{ matrix.matlab-version }}
