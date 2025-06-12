@@ -134,3 +134,10 @@ exportName = fullfile( projectRoot, "Requirements.mlproj" );
 proj.export( exportName )
 
 end % archiveTask
+
+function polyspaceTask( ~ )
+% Run Polyspace Bug Finder on the generated code.
+
+! polyspace-bug-finder -h
+
+end % polyspaceTask
