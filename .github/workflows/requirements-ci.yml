@@ -53,6 +53,7 @@ jobs:
           # The tests require only base MATLAB.
           products: >
             MATLAB
+            MATLAB_Test
             MATLAB_Coder
             Polyspace_Bug_Finder
             Requirements_Toolbox
