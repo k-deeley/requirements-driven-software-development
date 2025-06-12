@@ -138,6 +138,7 @@ end % archiveTask
 function polyspaceTask( ~ )
 % Run Polyspace Bug Finder on the generated code.
 
-! polyspace-bug-finder -h
+! cd /opt/hostedtoolcache/MATLAB/2024.2.999/x64
+! dir
 
 end % polyspaceTask
