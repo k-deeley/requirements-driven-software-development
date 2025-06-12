@@ -8,7 +8,7 @@ function plan = buildfile()
 plan = buildplan( localfunctions() );
 
 % Set the archive task to run by default.
-plan.DefaultTasks = "codegen";
+plan.DefaultTasks = "polyspace";
 
 % Add a test task to run the unit tests for the project. Generate and save
 % a coverage report.
