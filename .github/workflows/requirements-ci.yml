@@ -28,8 +28,8 @@ jobs:
     # Specify the platform that the job will run on.
     runs-on: ${{ matrix.platform }}
 
-    # Don't fail the entire run if one job fails.
-    continue-on-error: true
+    # Fail the entire run if one job fails.
+    continue-on-error: false
 
     # Steps define a sequence of tasks to be executed as part of the job.
     steps:
