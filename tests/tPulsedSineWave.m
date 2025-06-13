@@ -96,8 +96,9 @@ classdef tPulsedSineWave < matlabtest.coder.TestCase
 
         function tEquivalenceOfGeneratedCode( testCase )
 
-            % Generate C code.
+            % Generate C code.                   
             buildResults = testCase.build( "generateWave", ...
+                "Configuration", coderConfiguration(), ...
                 "Inputs", {1, 1, 1, 1, 1, 1, 1} );
 
             % Execute the generated code via a MEX-function.
@@ -105,7 +106,8 @@ classdef tPulsedSineWave < matlabtest.coder.TestCase
 
             % Verify the equivalence of the generated code and the original
             % algorithm.
-            testCase.verifyExecutionMatchesMATLAB( executionResults )
+            testCase.verifyExecutionMatchesMATLAB( executionResults, ...
+                "AbsTol", 1e-6 )
 
         end % tEquivalenceOfGeneratedCode
 

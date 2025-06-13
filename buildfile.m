@@ -8,7 +8,7 @@ function plan = buildfile()
 plan = buildplan( localfunctions() );
 
 % Set the archive task to run by default.
-plan.DefaultTasks = "polyspace";
+plan.DefaultTasks = "codegen";
 
 % Add a test task to run the unit tests for the project. Generate and save
 % a coverage report.
@@ -108,7 +108,7 @@ end % for
 % Configure the report options.
 reportOptions = slreq.getReportOptions();
 reportOptions.reportPath = char( fullfile( rootFolder, ...
-    "reports", "RequirementsStatus.docx" ) ); % Can be a string in R2024a
+    "reports", "RequirementsStatus.docx" ) );
 reportOptions.includes.emptySections = true;
 
 % Generate the report and tidy up.
@@ -117,11 +117,16 @@ slreq.clear() % Unload requirements sets from memory
 
 end % reportreqsTask
 
-function codegenTask( ~ )
+function codegenTask( context )
 % Generate C code from the signal processing algorithms.
 
-codegen( "generateWave", "-config:lib", ...
-    "-args", {1, 1, 1, 1, 1, 1, 1}, "-c" )
+generateWaveTypes = coder.getArgTypes( ...
+    "SampleWaveGeneration", "generateWave" );
+outputFolder = fullfile( context.Plan.RootFolder, "code", "codegen" );
+codegen( "generateWave", "-config", coderConfiguration(), ...
+    "-args", generateWaveTypes, ...
+    "-c", ...
+    "-d", outputFolder )
 
 end % codegenTask
 
@@ -134,11 +139,3 @@ exportName = fullfile( projectRoot, "Requirements.mlproj" );
 proj.export( exportName )
 
 end % archiveTask
-
-function polyspaceTask( ~ )
-% Run Polyspace Bug Finder on the generated code.
-
-! cd /opt/hostedtoolcache/MATLAB/2024.2.999/x64
-! dir
-
-end % polyspaceTask
