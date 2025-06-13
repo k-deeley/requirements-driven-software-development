@@ -55,7 +55,7 @@ jobs:
             MATLAB
             MATLAB_Test
             MATLAB_Coder
-            Polyspace_Bug_Finder
+            Embedded_Coder            
             Requirements_Toolbox
             Signal_Processing_Toolbox
           release: ${{ matrix.matlab-version }}
