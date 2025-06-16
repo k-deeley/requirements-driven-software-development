@@ -58,14 +58,8 @@ jobs:
             Embedded_Coder            
             Requirements_Toolbox
             Signal_Processing_Toolbox
-          release: ${{ matrix.matlab-version }}
-
-      # Check the MEX configuration.
-      - name: MEX setup
-        uses: matlab-actions/run-command@v2
-        with: 
-            command: "mex -setup"
+          release: ${{ matrix.matlab-version }}     
 
       # Run the default tasks in the project build file.
-      #- name: Run the default tasks in the project build file.
-      #  uses: matlab-actions/run-build@v2
+      - name: Run the default tasks in the project build file.
+        uses: matlab-actions/run-build@v2
