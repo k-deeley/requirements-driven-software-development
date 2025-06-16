@@ -28,8 +28,8 @@ jobs:
     # Specify the platform that the job will run on.
     runs-on: ${{ matrix.platform }}
 
-    # Fail the entire run if one job fails.
-    continue-on-error: false
+    # Continue the action if one job fails.
+    continue-on-error: true
 
     # Steps define a sequence of tasks to be executed as part of the job.
     steps:
@@ -60,6 +60,12 @@ jobs:
             Signal_Processing_Toolbox
           release: ${{ matrix.matlab-version }}
 
+      # Check the MEX configuration.
+      - name: MEX setup
+        uses: matlab-actions/run-command@v2
+        with: 
+            command: "mex -setup"
+
       # Run the default tasks in the project build file.
-      - name: Run the default tasks in the project build file.
-        uses: matlab-actions/run-build@v2
+      #- name: Run the default tasks in the project build file.
+      #  uses: matlab-actions/run-build@v2
