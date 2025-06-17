@@ -26,7 +26,7 @@ plan("test") = matlab.buildtool.tasks.TestTask( testsFolder, ...
 plan("test").Dependencies = "check";
 
 % The code generation task depends on the test task.
-plan("codegen").Dependencies = "test";
+%plan("codegen").Dependencies = "test";
 
 % The archive task depends on the test task.
 plan("archive").Dependencies = "test";
