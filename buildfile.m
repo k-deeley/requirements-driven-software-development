@@ -19,11 +19,14 @@ plan("test") = matlab.buildtool.tasks.TestTask( testsFolder, ...
     "Strict", true, ...
     "Description", "Assert that all project tests pass.", ...
     "SourceFiles", codeFolder, ...
-    "CodeCoverageResults", "reports/Coverage.html", ...
+    "CodeCoverageResults", "reports/Coverage.html", ...    
     "OutputDetail", "verbose" );
 
-% The test task depends on the check task.
-plan("test").Dependencies = "check";
+% The MEX-generation task depends on the check task.
+plan("mex").Dependencies = "check";
+
+% The test task depends on the MEX task.
+plan("test").Dependencies = "mex";
 
 % The code generation task depends on the test task.
 plan("codegen").Dependencies = "test";
@@ -116,6 +119,18 @@ slreq.generateReport( requirementsSets, reportOptions );
 slreq.clear() % Unload requirements sets from memory
 
 end % reportreqsTask
+
+function mexTask( context )
+% Build a MEX-function from the signal processing algorithms.
+
+outputFolder = fullfile( context.Plan.RootFolder, "code", "codegen" );
+mexPath = fullfile( context.Plan.RootFolder, "code", "generateWave_mex" );
+codegen( "generateWave", "-config:mex", ...
+    "-args", num2cell( ones( 1, 7 ) ), ...
+    "-d", outputFolder, ...
+    "-o", mexPath )
+
+end % mexTask
 
 function codegenTask( context )
 % Generate C code from the signal processing algorithms.
