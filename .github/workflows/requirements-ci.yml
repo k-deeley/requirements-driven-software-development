@@ -62,7 +62,4 @@ jobs:
 
       # Run the default tasks in the project build file.
       - name: Run the default tasks in the project build file.
-        uses: matlab-actions/run-command@v2
-        with:
-            startup-options: -nojvm
-            command: buildtool
+        uses: matlab-actions/run-build@v2 

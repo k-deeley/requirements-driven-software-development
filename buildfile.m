@@ -26,7 +26,7 @@ plan("test") = matlab.buildtool.tasks.TestTask( testsFolder, ...
 plan("test").Dependencies = "check";
 
 % The code generation task depends on the test task.
-%plan("codegen").Dependencies = "test";
+plan("codegen").Dependencies = "test";
 
 % The archive task depends on the test task.
 plan("archive").Dependencies = "test";
@@ -120,13 +120,11 @@ end % reportreqsTask
 function codegenTask( context )
 % Generate C code from the signal processing algorithms.
 
-%outputFolder = fullfile( context.Plan.RootFolder, "code", "codegen" );
-%codegen( "generateWave", "-config", coderConfiguration(), ...
-%    "-args", num2cell( ones( 1, 7 ) ), ...
-%    "-c", ...
-%    "-d", outputFolder )
-
-codegen generateWave -config:mex -args {1, 1, 1, 1, 1, 1, 1}
+outputFolder = fullfile( context.Plan.RootFolder, "code", "codegen" );
+codegen( "generateWave", "-config", coderConfiguration(), ...
+   "-args", num2cell( ones( 1, 7 ) ), ...
+   "-c", ...
+   "-d", outputFolder )
 
 end % codegenTask
 

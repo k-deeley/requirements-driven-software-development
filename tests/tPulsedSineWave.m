@@ -96,6 +96,11 @@ classdef tPulsedSineWave < matlabtest.coder.TestCase
 
         function tEquivalenceOfGeneratedCode( testCase )
 
+            % Filter.
+            tf = getenv( "GITHUB_ACTIONS" ) == "true";
+            testCase.assumeFalse( tf, "This test is not supported " + ...
+                "when running from GitHub Actions." )
+
             % Generate C code.    
             waveParams = num2cell( ones( 1, 7 ) );
             buildResults = testCase.build( "generateWave", ...
