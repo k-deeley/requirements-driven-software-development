@@ -95,16 +95,11 @@ classdef tPulsedSineWave < matlabtest.coder.TestCase
         end % tConstructorSetsNameValuePairs
 
         function tEquivalenceOfGeneratedCode( testCase )
-
-            % % Filter.
-            % tf = getenv( "GITHUB_ACTIONS" ) == "true";
-            % testCase.assumeFalse( tf, "This test is not supported " + ...
-            %     "when running from GitHub Actions." )
-
+            
             % Define the path to the generated MEX-file.
             mexPath = fullfile( currentProject().RootFolder, ...
                 "code", "generateWave_mex" );
-            
+
             % Execute the generated code via a MEX-function.
             executionResults = testCase.execute( mexPath, ...
                 "Inputs", num2cell( ones( 1, 7 ) ) );
