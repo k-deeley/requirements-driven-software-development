@@ -1,0 +1,3 @@
+% clean up
+clear
+clc
