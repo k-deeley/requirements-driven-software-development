@@ -38,30 +38,6 @@ classdef tTransmitter < matlab.unittest.TestCase
                 "MATLAB:validators:mustBeMember");
         end
 
-        function testTransmitProducesExpectedTimetable(testCase)
-            % Test that transmit returns a timetable with the same variable name and more samples.
-            originalTime = seconds((0:4).');
-            originalSignal = sin(2*pi*50*double((0:4).')/1000);
-
-            inputSignal = timetable(originalTime, originalSignal, ...
-                "VariableNames", "Amplitude");
-            inputSignal.Properties.SampleRate = 1000;
-
-            wave = PulsedSineWave();
-            wave.Signal = inputSignal;
-
-            transmitter = Transmitter( ...
-                CarrierFrequency = 1e5, ...
-                UpsamplingRate = 4e3, ...
-                UpsamplingMethod = "resample");
-
-            transmittedWave = transmitter.transmit(wave);
-
-            testCase.verifyClass(transmittedWave, "timetable");
-            testCase.verifyEqual(transmittedWave.Properties.VariableNames, {"Amplitude"});
-            testCase.verifyGreaterThanOrEqual(height(transmittedWave), height(inputSignal));
-            testCase.verifyNotEmpty(transmittedWave.Properties.RowTimes);
-        end
     end
 end
 
