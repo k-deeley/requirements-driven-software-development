@@ -23,13 +23,13 @@ jobs:
         platform: [ ubuntu-latest, windows-latest ]
                 
         # List of MATLAB releases over which to run the tests.        
-        matlab-version: [ R2024b, R2025a ]        
+        matlab-version: [ R2025b, R2026a ]        
     
     # Specify the platform that the job will run on.
     runs-on: ${{ matrix.platform }}
 
     # Continue the action if one job fails.
-    continue-on-error: true
+    continue-on-error: false
 
     # Steps define a sequence of tasks to be executed as part of the job.
     steps:
