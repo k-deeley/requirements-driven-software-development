@@ -24,6 +24,14 @@ jobs:
                 
         # List of MATLAB releases over which to run the tests.        
         matlab-version: [ R2026a ]        
+
+        include:
+          - platform: windows-latest
+            matlab-version: R2026a
+            additional-products: MATLAB_Support_for_MinGW-w64_C/C++/Fortran_Compiler
+          - platform: ubuntu-latest
+            matlab-version: R2026a
+            additional-products: ""
     
     # Specify the platform that the job will run on.
     runs-on: ${{ matrix.platform }}
@@ -58,7 +66,7 @@ jobs:
             Embedded_Coder            
             Requirements_Toolbox
             Signal_Processing_Toolbox
-            MATLAB_Support_for_MinGW-w64_C/C++/Fortran_Compiler
+            ${{ matrix.additional-products }}
           release: ${{ matrix.matlab-version }}     
 
       # Run the default tasks in the project build file.
