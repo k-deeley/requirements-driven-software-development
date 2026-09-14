@@ -23,7 +23,7 @@ jobs:
         platform: [ ubuntu-latest, windows-latest ]
                 
         # List of MATLAB releases over which to run the tests.        
-        matlab-version: [ R2025b, R2026a ]        
+        matlab-version: [ R2026a ]        
     
     # Specify the platform that the job will run on.
     runs-on: ${{ matrix.platform }}
