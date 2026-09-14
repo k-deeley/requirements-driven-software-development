@@ -58,6 +58,7 @@ jobs:
             Embedded_Coder            
             Requirements_Toolbox
             Signal_Processing_Toolbox
+            MATLAB_Support_for_MinGW-w64_C/C++/Fortran_Compiler
           release: ${{ matrix.matlab-version }}     
 
       # Run the default tasks in the project build file.
