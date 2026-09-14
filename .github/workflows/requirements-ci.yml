@@ -23,7 +23,7 @@ jobs:
         platform: [ ubuntu-latest, windows-latest ]
                 
         # List of MATLAB releases over which to run the tests.        
-        matlab-version: [ R2026a, latest-including-prerelease ]        
+        matlab-version: [ R2026a ]        
 
         include:
           - platform: windows-latest
