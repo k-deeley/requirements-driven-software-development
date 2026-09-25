@@ -7,8 +7,8 @@ function plan = buildfile()
 % Define the build plan.
 plan = buildplan( localfunctions() );
 
-% Set the archive task to run by default.
-plan.DefaultTasks = "codegen";
+% Run code generation and requirements reporting by default.
+plan.DefaultTasks = ["codegen", "reportreqs"];
 
 % Add a test task to run the unit tests for the project. Generate and save
 % a coverage report.
@@ -25,8 +25,8 @@ plan("test") = matlab.buildtool.tasks.TestTask( testsFolder, ...
 % The MEX-generation task depends on the check task.
 plan("mex").Dependencies = "check";
 
-% The test task depends on the MEX task.
-plan("test").Dependencies = "mex";
+% The test task depends on the MEX and report setup tasks.
+plan("test").Dependencies = ["mex", "setupreports"];
 
 % The code generation task depends on the test task.
 plan("codegen").Dependencies = "test";
@@ -78,6 +78,16 @@ assert( all( passed ), "buildfile:ProjectIssue", ...
 
 end % checkTask
 
+function setupreportsTask( context )
+% Create the reports folder used by build tasks.
+
+reportsFolder = fullfile( context.Plan.RootFolder, "reports" );
+if ~isfolder( reportsFolder )
+    mkdir( reportsFolder )
+end % if
+
+end % setupreportsTask
+
 function writereqsTask( ~ )
 %Serialize binary requirements sets and link sets to CSV files.
 
@@ -99,6 +109,7 @@ function reportreqsTask( context )
 
 % Load the necessary requirements sets (needed for report generation).
 rootFolder = context.Plan.RootFolder;
+reportsFolder = fullfile( rootFolder, "reports" );
 requirementsFolder = fullfile( rootFolder, "requirements" );
 requirementsInfo = struct2table( dir( fullfile( requirementsFolder, ...
     "*.slreqx" ) ) );
@@ -110,8 +121,8 @@ end % for
 
 % Configure the report options.
 reportOptions = slreq.getReportOptions();
-reportOptions.reportPath = char( fullfile( rootFolder, ...
-    "reports", "RequirementsStatus.docx" ) );
+reportOptions.reportPath = char( fullfile( reportsFolder, ...
+    "RequirementsStatus.docx" ) );
 reportOptions.includes.emptySections = true;
 
 % Generate the report and tidy up.
@@ -125,7 +136,9 @@ function mexTask( context )
 
 outputFolder = fullfile( context.Plan.RootFolder, "code", "codegen" );
 mexPath = fullfile( context.Plan.RootFolder, "code", "generateWave_mex" );
-codegen( "generateWave", "-config:mex", ...
+mexConfig = coder.config( "mex" );
+mexConfig.GenerateReport = true;
+codegen( "generateWave", "-config", mexConfig, ...
     "-args", num2cell( ones( 1, 7 ) ), ...
     "-d", outputFolder, ...
     "-o", mexPath )

@@ -96,18 +96,10 @@ classdef tPulsedSineWave < matlabtest.coder.TestCase
 
         function tEquivalenceOfGeneratedCode( testCase )
             
-            % Define the path to the generated MEX-file.
-            mexPath = fullfile( currentProject().RootFolder, ...
-                "code", "generateWave_mex" );
-
-            % Execute the generated code via a MEX-function.
-            executionResults = testCase.execute( mexPath, ...
-                "Inputs", num2cell( ones( 1, 7 ) ) );
-            
-            % Verify the equivalence of the generated code and the original
-            % algorithm.
-            testCase.verifyExecutionMatchesMATLAB( executionResults, ...
-                "AbsTol", 1e-6 )
+            buildResults = build( testCase, "generateWave", ...
+                Inputs= num2cell( ones(1,7) ));
+            executionResults = execute( testCase, buildResults );
+            verifyExecutionMatchesMATLAB( testCase, executionResults )
 
         end % tEquivalenceOfGeneratedCode
 

@@ -8,6 +8,7 @@ end % arguments ( Output )
 config = coder.config( "lib", "ecoder", true );
 config.EnableOpenMP = false;
 config.InstructionSetExtensions = "None";
+config.GenerateReport = true;
 config.ReqsInCode = true;
 
 end % coderConfiguration

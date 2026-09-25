@@ -72,3 +72,14 @@ jobs:
       # Run the default tasks in the project build file.
       - name: Run the default tasks in the project build file.
         uses: matlab-actions/run-build@v3 
+
+      # Upload generated reports from the build.
+      - name: Upload build reports.
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports-${{ matrix.platform }}-${{ matrix.matlab-version }}
+          path: |
+            code/codegen/**/html/**
+            reports/**
+          if-no-files-found: warn
