@@ -15,8 +15,12 @@ plan.DefaultTasks = ["codegen", "reportreqs"];
 projectRoot = plan.RootFolder;
 testsFolder = fullfile( projectRoot, "tests" );
 codeFolder = fullfile( projectRoot, "code" );
+reportsFolder = fullfile( projectRoot, "reports" );
+if ~isfolder( reportsFolder )
+    mkdir( reportsFolder )
+end % if
 coverageReport = matlabtest.plugins.codecoverage.StandaloneReport( ...
-    fullfile( projectRoot, "reports", "Coverage.html" ) );
+    fullfile( reportsFolder, "Coverage.html" ) );
 testTask = matlab.buildtool.tasks.TestTask( testsFolder, ...
     "Strict", true, ...
     "Description", "Assert that all project tests pass.", ...
