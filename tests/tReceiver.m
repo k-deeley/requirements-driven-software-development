@@ -37,5 +37,90 @@ classdef tReceiver < matlab.unittest.TestCase
                 @() Receiver(AttenuationFactor = -0.1), ...
                 "MATLAB:validators:mustBeInRange");
         end
+
+        function testConstructorRejectsInvalidDelay(testCase)
+            % Verify invalid delays are rejected by property validation.
+            testCase.verifyError( ...
+                @() Receiver(Delay = 0), ...
+                "MATLAB:validators:mustBePositive");
+        end
+
+        function testConstructorRejectsInvalidTargetSNR(testCase)
+            % Verify invalid target SNR values are rejected by property validation.
+            testCase.verifyError( ...
+                @() Receiver(TargetSNR = -1), ...
+                "MATLAB:validators:mustBeNonnegative");
+        end
+
+        function testConstructorRejectsInvalidCarrierFrequency(testCase)
+            % Verify invalid carrier frequencies are rejected by property validation.
+            testCase.verifyError( ...
+                @() Receiver(CarrierFrequency = 0), ...
+                "MATLAB:validators:mustBePositive");
+        end
+
+        function testConstructorRejectsInvalidDownsamplingFactor(testCase)
+            % Verify invalid downsampling factors are rejected by property validation.
+            testCase.verifyError( ...
+                @() Receiver(DownsamplingFactor = 1.5), ...
+                "MATLAB:validators:mustBeInteger");
+        end
+
+        function testConstructorRejectsInvalidDownsamplingMethod(testCase)
+            % Verify invalid downsampling methods are rejected by property validation.
+            testCase.verifyError( ...
+                @() Receiver(DownsamplingMethod = "invalid"), ...
+                "MATLAB:validators:mustBeMember");
+        end
+
+        function testReceiveWithDownsamplePreservesMetadataAndLength(testCase)
+            % Verify the downsample branch returns the expected timetable shape.
+            inputSignal = createZeroSignal(120, 1000);
+            receiver = Receiver( ...
+                AttenuationFactor = 0, ...
+                Delay = 4, ...
+                TargetSNR = 20, ...
+                CarrierFrequency = 10, ...
+                DownsamplingFactor = 2, ...
+                DownsamplingMethod = "downsample");
+
+            receivedSignal = receive(receiver, inputSignal);
+
+            testCase.verifyEqual(height(receivedSignal), 64);
+            testCase.verifyEqual(receivedSignal.Properties.VariableNames, ...
+                inputSignal.Properties.VariableNames);
+            testCase.verifyEqual(receivedSignal.Time(1), inputSignal.Time(1));
+            testCase.verifyEqual(receivedSignal.Time(end), inputSignal.Time(end));
+            testCase.verifyEqual(receivedSignal.Signal, zeros(64, 1), ...
+                "AbsTol", 1e-12);
+        end
+
+        function testReceiveWithDecimatePreservesMetadataAndLength(testCase)
+            % Verify the decimate branch returns the expected timetable shape.
+            inputSignal = createZeroSignal(120, 1000);
+            receiver = Receiver( ...
+                AttenuationFactor = 0, ...
+                Delay = 4, ...
+                TargetSNR = 20, ...
+                CarrierFrequency = 10, ...
+                DownsamplingFactor = 2, ...
+                DownsamplingMethod = "decimate");
+
+            receivedSignal = receive(receiver, inputSignal);
+
+            testCase.verifyEqual(height(receivedSignal), 64);
+            testCase.verifyEqual(receivedSignal.Properties.VariableNames, ...
+                inputSignal.Properties.VariableNames);
+            testCase.verifyEqual(receivedSignal.Time(1), inputSignal.Time(1));
+            testCase.verifyEqual(receivedSignal.Time(end), inputSignal.Time(end));
+            testCase.verifyEqual(receivedSignal.Signal, zeros(64, 1), ...
+                "AbsTol", 1e-10);
+        end
     end
+end
+
+function signal = createZeroSignal(sampleCount, sampleRate)
+Time = seconds((0 : sampleCount - 1)' / sampleRate);
+Signal = zeros(sampleCount, 1);
+signal = timetable(Time, Signal);
 end
